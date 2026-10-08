@@ -806,7 +806,7 @@ function backToLobbyView(){
    VISTA / RENDER (todos, incluido el host)
    ===================================================================== */
 const cv=$('cv'),ctx=cv.getContext('2d');let dpr=1;
-function resize(){dpr=Math.min(2,window.devicePixelRatio||1);cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px'}
+function resize(){dpr=Math.min(3,window.devicePixelRatio||1);const w=Math.round(innerWidth*dpr),h=Math.round(innerHeight*dpr);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high'}
 addEventListener('resize',resize);resize();
 
 const view={walls:[],players:new Map(),enemies:new Map(),bullets:[],hearts:[],al:[],fx:[],ph:'play',w:1,tl:0,tier:0,song:0,boss:0,pk:0,pn:1,ct:0,banner:null,flash:0,shake:0,over:false};
@@ -1125,7 +1125,7 @@ function drawPlayer(c,p,t){
   c.restore();
 }
 
-function render(t){
+function render(t){if(cv.width!==Math.round(innerWidth*Math.min(3,window.devicePixelRatio||1))||cv.height!==Math.round(innerHeight*Math.min(3,window.devicePixelRatio||1)))resize();
   const W=cv.width,H=cv.height,sc=Math.min(W/1150,H/680)*(innerWidth<700?1.0:1);
   const me=view.players.get(net.myId);
   let tg=me&&me.al?me:null;if(!tg)for(const p of view.players.values())if(p.al){tg=p;break}
@@ -1134,7 +1134,7 @@ function render(t){
   const T=TIERS[view.tier]||TIERS[0];
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#07070c';ctx.fillRect(0,0,W,H);
   const sx=view.shake>0?(Math.random()-.5)*8*view.shake*5:0,sy=view.shake>0?(Math.random()-.5)*8*view.shake*5:0;
-  ctx.setTransform(sc,0,0,sc,W/2-cam.x*sc+sx,H/2-cam.y*sc+sy);
+  ctx.setTransform(sc,0,0,sc,Math.round(W/2-cam.x*sc+sx),Math.round(H/2-cam.y*sc+sy));
   const vx0=cam.x-W/2/sc,vy0=cam.y-H/2/sc,vx1=cam.x+W/2/sc,vy1=cam.y+H/2/sc;
   ctx.fillStyle=T.bg;ctx.fillRect(0,0,MAP,MAP);
   const TS=64;
